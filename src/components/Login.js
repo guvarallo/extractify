@@ -1,13 +1,16 @@
 import React, { useRef, useState } from "react";
 import { Form, Button, Card, Alert } from "react-bootstrap";
+import { Link, useHistory } from "react-router-dom";
+
 import { useAuth } from "../contexts/AuthContext";
 
 function Login() {
   const emailRef = useRef();
   const passwordRef = useRef();
-  const { signup } = useAuth();
+  const { login } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const history = useHistory();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -15,9 +18,10 @@ function Login() {
     try {
       setLoading(true);
       setError("");
-      await signup(emailRef.current.value, passwordRef.current.value);
+      await login(emailRef.current.value, passwordRef.current.value);
+      history.push("/");
     } catch {
-      setError("Failed to create an account");
+      setError("Wrong credentials");
     }
     setLoading(false);
   }
@@ -44,7 +48,7 @@ function Login() {
         </Card.Body>
       </Card>
       <div className='w-100 text-center mt-2'>
-        Do not have an account? Sign Up here!
+        Do not have an account? <Link to='/signup'>Sign Up here!</Link>
       </div>
     </>
   );
