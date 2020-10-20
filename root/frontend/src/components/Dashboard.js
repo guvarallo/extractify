@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Alert, Accordion, Card, Button } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 
@@ -7,7 +7,28 @@ import { useAuth } from "../contexts/AuthContext";
 function Dashboard() {
   const [error, setError] = useState("");
   const { currentUser, logout } = useAuth();
+  const [pdfs, setPdfs] = useState(null);
   const history = useHistory();
+  const url =
+    "https://us-central1-extractify-development.cloudfunctions.net/api";
+
+  useEffect(() => {
+    fetch(`${url}/pdfs`, {
+      method: "get",
+      headers: { Authorization: localStorage.getItem("FBIdToken") },
+    })
+      .then(res => res.json())
+      .then(data => {
+        setPdfs(
+          data.map(result => ({
+            id: result.pdfId,
+            name: result.name,
+            text: result.text,
+          }))
+        );
+      })
+      .catch(err => console.log(err));
+  }, []);
 
   async function handleLogout() {
     setError("");
@@ -35,28 +56,23 @@ function Dashboard() {
         </Card.Body>
       </Card>
       <br />
-      <Accordion defaultActiveKey='0'>
-        <Card>
-          <Card.Header>
-            <Accordion.Toggle as={Button} variant='link' eventKey='0'>
-              Click me!
-            </Accordion.Toggle>
-          </Card.Header>
-          <Accordion.Collapse eventKey='0'>
-            <Card.Body>Hello! I'm the body</Card.Body>
-          </Accordion.Collapse>
-        </Card>
-        <Card>
-          <Card.Header>
-            <Accordion.Toggle as={Button} variant='link' eventKey='1'>
-              Click me!
-            </Accordion.Toggle>
-          </Card.Header>
-          <Accordion.Collapse eventKey='1'>
-            <Card.Body>Hello! I'm another body</Card.Body>
-          </Accordion.Collapse>
-        </Card>
-      </Accordion>
+      {pdfs &&
+        pdfs.map(pdf => {
+          return (
+            <Accordion key={pdf.id} defaultActiveKey='0'>
+              <Card>
+                <Card.Header>
+                  <Accordion.Toggle as={Button} variant='link' eventKey='0'>
+                    {pdf.name}
+                  </Accordion.Toggle>
+                </Card.Header>
+                <Accordion.Collapse eventKey='0'>
+                  <Card.Body>{pdf.text}</Card.Body>
+                </Accordion.Collapse>
+              </Card>
+            </Accordion>
+          );
+        })}
     </>
   );
 }

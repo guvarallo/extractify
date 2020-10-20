@@ -15,10 +15,15 @@ function Login() {
   async function handleSubmit(e) {
     e.preventDefault();
 
+    const userData = {
+      email: emailRef.current.value,
+      password: passwordRef.current.value,
+    };
+
     try {
       setLoading(true);
       setError("");
-      await login(emailRef.current.value, passwordRef.current.value);
+      await login(userData);
       history.push("/");
     } catch {
       setError("Wrong credentials");

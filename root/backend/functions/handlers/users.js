@@ -74,9 +74,8 @@ exports.login = (req, res) => {
     .auth()
     .signInWithEmailAndPassword(user.email, user.password)
     .then(data => {
-      return data.user.getIdToken();
+      return res.send(data);
     })
-    .then(token => res.json({ token }))
     .catch(err => {
       console.log(err);
       return res
