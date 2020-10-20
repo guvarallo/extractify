@@ -19,8 +19,14 @@ export function AuthProvider({ children }) {
     setCurrentUser(res);
   }
 
-  function signup(email, password) {
-    return auth.createUserWithEmailAndPassword(email, password);
+  async function signup(user, history) {
+    return await axios.post(`${url}/signup`, user).then(res => {
+      const FBIdToken = `Bearer ${res.data.token}`;
+      localStorage.setItem("FBIdToken", FBIdToken);
+      axios.defaults.headers.common["Authorization"] = FBIdToken;
+      getUser().then(() => history.push("/"));
+      setLoading(false);
+    });
   }
 
   async function login(user, history) {
