@@ -1,18 +1,15 @@
 const functions = require("firebase-functions");
-const admin = require("firebase-admin");
 const app = require("express")();
 const config = require("./utils/config");
-
-admin.initializeApp();
+const { admin, db } = require("./utils/admin");
 
 const firebase = require("firebase");
 firebase.initializeApp(config);
 
-const db = admin.firestore();
-
+const FBAuth = require("./utils/fbAuth");
 const { validateSignupData, validateLoginData } = require("./utils/validators");
 
-app.get("/pdfs", (req, res) => {
+app.get("/pdfs", FBAuth, (req, res) => {
   db.collection("pdfs")
     .orderBy("createdAt", "asc")
     .get()
@@ -21,6 +18,7 @@ app.get("/pdfs", (req, res) => {
       data.forEach(doc => {
         pdfs.push({
           pdfId: doc.id,
+          name: doc.data().name,
           text: doc.data().text,
           userName: doc.data().userName,
           createdAt: doc.data().createdAt,
