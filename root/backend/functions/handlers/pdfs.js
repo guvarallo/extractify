@@ -20,3 +20,78 @@ exports.getAllPdfs = (req, res) => {
     })
     .catch(err => console.error(err));
 };
+
+exports.postPdf = (req, res) => {
+  const BusBoy = require("busboy");
+  const fs = require("fs");
+  const path = require("path");
+  const os = require("os");
+
+  const busboy = new BusBoy({ headers: req.headers });
+
+  let filepath;
+  let pdfText;
+  let name;
+
+  busboy.on("file", async (fieldname, file, filename, encoding, mimetype) => {
+    if (mimetype !== "application/pdf") {
+      return res
+        .status(400)
+        .json({ error: "Wrong file type. Please submit only .pdf files." });
+    }
+
+    name = filename;
+    filepath = path.join(os.tmpdir(), path.basename(fieldname));
+    file.pipe(fs.createWriteStream(filepath));
+  });
+
+  busboy.on("finish", async function () {
+    const fs = require("fs");
+    const pdfParse = require("pdf-parse");
+
+    const pdfFile = fs.readFileSync(filepath);
+
+    await pdfParse(pdfFile).then(data => {
+      pdfText = data.text;
+    });
+
+    const newPdf = {
+      text: pdfText,
+      name: name,
+      userName: req.user.user,
+      createdAt: new Date().toISOString(),
+    };
+
+    db.collection("pdfs")
+      .add(newPdf)
+      .then(doc => {
+        return res.json({ message: `document ${doc.id} created successfully` });
+      })
+      .catch(err => {
+        console.log(err);
+        return res.status(500).json({ error: "Something went wrong" });
+      });
+  });
+
+  busboy.end(req.rawBody);
+};
+
+exports.deletePdf = (req, res) => {
+  const document = db.doc(`/pdfs/${req.params.pdfId}`);
+  document
+    .get()
+    .then(doc => {
+      if (!doc.exists) return res.status(404).json({ error: "PDF not found" });
+
+      if (doc.data().userName !== req.user.user) {
+        return res.status(403).json({ error: "Unauthorized" });
+      } else {
+        return document.delete();
+      }
+    })
+    .then(() => res.json({ message: "PDF deleted successfully" }))
+    .catch(err => {
+      console.error(err);
+      return res.status(500).json({ error: err.code });
+    });
+};
