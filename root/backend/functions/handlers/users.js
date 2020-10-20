@@ -73,13 +73,29 @@ exports.login = (req, res) => {
   firebase
     .auth()
     .signInWithEmailAndPassword(user.email, user.password)
-    .then(data => {
-      return res.send(data);
-    })
+    .then(data => data.user.getIdToken())
+    .then(token => res.json({ token }))
     .catch(err => {
       console.log(err);
       return res
         .status(403)
         .json({ general: "Wrong credentials, please try again." });
+    });
+};
+
+exports.getUser = (req, res) => {
+  let userData = {};
+
+  db.doc(`/users/${req.user.user}`)
+    .get()
+    .then(doc => {
+      if (doc.exists) {
+        userData.credentials = doc.data();
+      }
+    })
+    .then(() => res.json(userData))
+    .catch(err => {
+      console.log(err);
+      return res.status(500).json({ error: err.code });
     });
 };

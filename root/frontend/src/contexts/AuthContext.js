@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { auth } from "../firebase";
 import axios from "axios";
 
@@ -12,21 +12,20 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // function getUser
 
   function signup(email, password) {
     return auth.createUserWithEmailAndPassword(email, password);
   }
 
-  async function login(user) {
-    setLoading(true);
-    const data = await axios.post(`${url}/login`, user);
-    setCurrentUser(data.data.user);
-    localStorage.setItem(
-      "FBIdToken",
-      `Bearer ${data.data.user.stsTokenManager.accessToken}`
-    );
-    setLoading(false);
+  function login(user) {
+    axios.post(`${url}/login`, user).then(res => {
+      const FBIdToken = `Bearer ${res.data.token}`;
+      localStorage.setItem("FBIdToken", FBIdToken);
+      axios.defaults.headers.common["Authorization"] = FBIdToken;
+    });
   }
 
   function logout() {
@@ -38,6 +37,14 @@ export function AuthProvider({ children }) {
   function resetPassword(email) {
     return auth.sendPasswordResetEmail(email);
   }
+
+  useEffect(() => {
+    auth.onAuthStateChanged(user => {
+      console.log(user);
+      setCurrentUser(user);
+      setLoading(false);
+    });
+  }, []);
 
   const value = {
     currentUser,
