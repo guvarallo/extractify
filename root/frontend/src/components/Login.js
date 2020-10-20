@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
-import { Form, Button, Card, Alert } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
+import { Form, Button, Card, Alert, Spinner } from "react-bootstrap";
 
 import { useAuth } from "../contexts/AuthContext";
 
@@ -15,16 +15,16 @@ function Login() {
   async function handleSubmit(e) {
     e.preventDefault();
 
+    setLoading(true);
+
     const userData = {
       email: emailRef.current.value,
       password: passwordRef.current.value,
     };
 
     try {
-      setLoading(true);
       setError("");
-      await login(userData);
-      history.push("/");
+      await login(userData, history);
     } catch {
       setError("Wrong credentials");
     }
@@ -47,6 +47,16 @@ function Login() {
               <Form.Control type='password' ref={passwordRef} required />
             </Form.Group>
             <Button disabled={loading} className='w-100' type='submit'>
+              {loading && (
+                <Spinner
+                  as='span'
+                  animation='border'
+                  size='sm'
+                  role='status'
+                  aria-hidden='true'
+                  style={{ marginRight: "10px" }}
+                />
+              )}
               Login
             </Button>
           </Form>

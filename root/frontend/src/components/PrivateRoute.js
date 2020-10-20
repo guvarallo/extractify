@@ -10,7 +10,11 @@ function PrivateRoute({ component: Component, ...rest }) {
     <Route
       {...rest}
       render={props =>
-        currentUser ? <Component {...props} /> : <Redirect to='login' />
+        Object.keys(currentUser).length ? (
+          <Component {...props} />
+        ) : (
+          <Redirect to='login' />
+        )
       }
     ></Route>
   );

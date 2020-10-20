@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { auth } from "../firebase";
 import axios from "axios";
 
@@ -14,18 +14,22 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState({});
   const [loading, setLoading] = useState(true);
 
-  // function getUser
+  async function getUser() {
+    const res = await axios.get(`${url}/user`);
+    setCurrentUser(res);
+  }
 
   function signup(email, password) {
     return auth.createUserWithEmailAndPassword(email, password);
   }
 
-  function login(user) {
-    axios.post(`${url}/login`, user).then(res => {
-      const FBIdToken = `Bearer ${res.data.token}`;
-      localStorage.setItem("FBIdToken", FBIdToken);
-      axios.defaults.headers.common["Authorization"] = FBIdToken;
-    });
+  async function login(user, history) {
+    const res = await axios.post(`${url}/login`, user);
+    const FBIdToken = `Bearer ${res.data.token}`;
+    localStorage.setItem("FBIdToken", FBIdToken);
+    axios.defaults.headers.common["Authorization"] = FBIdToken;
+    getUser().then(() => history.push("/"));
+    setLoading(false);
   }
 
   function logout() {
@@ -38,12 +42,17 @@ export function AuthProvider({ children }) {
     return auth.sendPasswordResetEmail(email);
   }
 
+  // Clears token on closing/refreshing browser
+  window.addEventListener(
+    "beforeunload",
+    function () {
+      localStorage.clear();
+    },
+    false
+  );
+
   useEffect(() => {
-    auth.onAuthStateChanged(user => {
-      console.log(user);
-      setCurrentUser(user);
-      setLoading(false);
-    });
+    setLoading(false);
   }, []);
 
   const value = {

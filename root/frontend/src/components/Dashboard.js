@@ -6,7 +6,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 function Dashboard() {
   const [error, setError] = useState("");
-  const { currentUser, logout } = useAuth();
+  const { logout } = useAuth();
   const [pdfs, setPdfs] = useState(null);
   const history = useHistory();
   const url =
@@ -19,16 +19,18 @@ function Dashboard() {
     })
       .then(res => res.json())
       .then(data => {
+        console.log(data);
         setPdfs(
           data.map(result => ({
             id: result.pdfId,
             name: result.name,
             text: result.text,
+            user: result.userName,
           }))
         );
       })
       .catch(err => console.log(err));
-  }, []);
+  }, [setPdfs]);
 
   async function handleLogout() {
     setError("");
@@ -43,18 +45,19 @@ function Dashboard() {
 
   return (
     <>
-      <Card>
-        <Card.Body className='text-center'>
-          <h2 className='mb-4'>Profile</h2>
-          {error && <Alert variant='danger'>{error}</Alert>}
-          <strong>Email:</strong> {currentUser.email}
-          <div className='w-100 mt-2'>
-            <Button variant='link' onClick={handleLogout}>
-              Logout
-            </Button>
-          </div>
-        </Card.Body>
-      </Card>
+      {pdfs && (
+        <Card>
+          <Card.Body className='text-center'>
+            <h2 className='mb-4'>Welcome {pdfs[0].user}</h2>
+            {error && <Alert variant='danger'>{error}</Alert>}
+            <div className='w-100 mt-2'>
+              <Button variant='link' onClick={handleLogout}>
+                Logout
+              </Button>
+            </div>
+          </Card.Body>
+        </Card>
+      )}
       <br />
       {pdfs &&
         pdfs.map(pdf => {
