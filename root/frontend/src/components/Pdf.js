@@ -4,7 +4,7 @@ import axios from "axios";
 
 function Pdf() {
   const [error, setError] = useState("");
-  const [pdfs, setPdfs] = useState();
+  const [pdfs, setPdfs] = useState([]);
   const [firstLoad, setFirstLoad] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -75,7 +75,9 @@ function Pdf() {
         setMessage("File uploaded successfully");
       })
       .catch(err => {
-        setError(err.response.data);
+        setError(
+          "An error has occurred, please refresh your browser and try again"
+        );
         setLoading(false);
       });
   }

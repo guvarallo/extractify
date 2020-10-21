@@ -2,6 +2,7 @@ import React from "react";
 import { Container } from "react-bootstrap";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import jwt_decode from "jwt-decode";
+import axios from "axios";
 
 import { AuthProvider } from "../contexts/AuthContext";
 import PrivateRoute from "./PrivateRoute";
@@ -14,7 +15,10 @@ let authed;
 const token = localStorage.FBIdToken;
 if (token) {
   const decodedToken = jwt_decode(token);
+  // If token is expired, delete from localStorage and redirect to /login
   if (decodedToken.exp * 1000 < Date.now()) {
+    localStorage.removeItem("FBIdToken");
+    delete axios.defaults.headers.common["Authorization"];
     window.location.href = "/login";
     authed = false;
   } else {
