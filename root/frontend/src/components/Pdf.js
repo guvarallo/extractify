@@ -32,7 +32,9 @@ function Pdf() {
       } catch (err) {
         console.error(err);
         setMessage("");
-        setError("Unable to fetch PDFs from database");
+        setError(
+          "Unable to fetch PDFs from database, please refresh the page and try again"
+        );
         setFirstLoad(false);
       }
     }
