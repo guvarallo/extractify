@@ -1,6 +1,7 @@
 import React from "react";
 import { Container } from "react-bootstrap";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import jwt_decode from "jwt-decode";
 
 import { AuthProvider } from "../contexts/AuthContext";
 import PrivateRoute from "./PrivateRoute";
@@ -8,6 +9,18 @@ import Dashboard from "./Dashboard";
 import Signup from "./Signup";
 import Login from "./Login";
 import ForgotPassword from "./ForgotPassword";
+
+let authed;
+const token = localStorage.FBIdToken;
+if (token) {
+  const decodedToken = jwt_decode(token);
+  if (decodedToken.exp * 1000 < Date.now()) {
+    window.location.href = "/login";
+    authed = false;
+  } else {
+    authed = true;
+  }
+}
 
 function App() {
   return (
@@ -19,7 +32,12 @@ function App() {
         <Router>
           <AuthProvider>
             <Switch>
-              <PrivateRoute exact path='/' component={Dashboard} />
+              <PrivateRoute
+                authed={authed}
+                exact
+                path='/'
+                component={Dashboard}
+              />
               <Route path='/signup' component={Signup} />
               <Route path='/login' component={Login} />
               <Route path='/forgot-password' component={ForgotPassword} />

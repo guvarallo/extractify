@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { auth } from "../firebase";
 import axios from "axios";
 
@@ -11,31 +11,42 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState({});
-  const [loading, setLoading] = useState(true);
+  // const [currentUser, setCurrentUser] = useState();
+  // const [loading, setLoading] = useState(true);
+  // const [authed, setAuthed] = useState(false);
 
-  async function getUser() {
-    const res = await axios.get(`${url}/user`);
-    setCurrentUser(res);
-  }
+  // function getAuth() {
+  //   return setAuthed(localStorage.getItem("FBIdToken") ? true : false);
+  // }
+  // async function getUser() {
+  //   const res = await axios.get(`${url}/user`);
+  //   setCurrentUser({
+  //     user: res.data.credentials.user,
+  //     id: res.data.credentials.userId,
+  //     email: res.data.credentials.email,
+  //   });
+  // }
 
   async function signup(user, history) {
-    return await axios.post(`${url}/signup`, user).then(res => {
-      const FBIdToken = `Bearer ${res.data.token}`;
-      localStorage.setItem("FBIdToken", FBIdToken);
-      axios.defaults.headers.common["Authorization"] = FBIdToken;
-      getUser().then(() => history.push("/"));
-      setLoading(false);
-    });
+    const res = await axios.post(`${url}/signup`, user);
+    // setCurrentUser(res.data);
+    const FBIdToken = `Bearer ${res.data.token}`;
+    localStorage.setItem("FBIdToken", FBIdToken);
+    axios.defaults.headers.common["Authorization"] = FBIdToken;
+    history.push("/");
+    // getAuth().then(() => history.push("/"));
+    // getUser().then(() => history.push("/"));
   }
 
   async function login(user, history) {
     const res = await axios.post(`${url}/login`, user);
+    // setCurrentUser(res.data);
     const FBIdToken = `Bearer ${res.data.token}`;
     localStorage.setItem("FBIdToken", FBIdToken);
     axios.defaults.headers.common["Authorization"] = FBIdToken;
-    getUser().then(() => history.push("/"));
-    setLoading(false);
+    history.push("/");
+    // getAuth().then(() => history.push("/"));
+    // getUser().then(() => history.push("/"));
   }
 
   function logout() {
@@ -48,31 +59,12 @@ export function AuthProvider({ children }) {
     return auth.sendPasswordResetEmail(email);
   }
 
-  // Clears token on closing/refreshing browser
-  // window.addEventListener(
-  //   "beforeunload",
-  //   function () {
-  //     localStorage.clear();
-  //   },
-  //   false
-  // );
-
-  useEffect(() => {
-    auth.onAuthStateChanged(user => setCurrentUser(user));
-    setLoading(false);
-  }, []);
-
   const value = {
-    currentUser,
     signup,
     login,
     logout,
     resetPassword,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

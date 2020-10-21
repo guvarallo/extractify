@@ -5,15 +5,19 @@ import axios from "axios";
 function Pdf() {
   const [error, setError] = useState("");
   const [pdfs, setPdfs] = useState(null);
+  const [firstLoad, setFirstLoad] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const url =
     "https://us-central1-extractify-development.cloudfunctions.net/api";
 
   useEffect(() => {
+    setFirstLoad(true);
     async function getPdfs() {
       try {
-        const res = await axios.get(`${url}/pdfs`);
+        const res = await axios.get(`${url}/pdfs`, {
+          headers: { Authorization: localStorage.FBIdToken },
+        });
         setPdfs(
           res.data.map(result => ({
             id: result.pdfId,
@@ -22,10 +26,12 @@ function Pdf() {
             user: result.userName,
           }))
         );
+        setFirstLoad(false);
       } catch (err) {
         console.error(err);
         setMessage("");
         setError("Unable to fetch PDFs from database");
+        setFirstLoad(false);
       }
     }
     getPdfs();
@@ -104,6 +110,16 @@ function Pdf() {
         </div>
       )}
       <br />
+      {firstLoad && (
+        <div style={{ maxWidth: "90%", margin: "auto" }}>
+          <Spinner
+            style={{ marginRight: "10px" }}
+            animation='grow'
+            variant='primary'
+          />
+          <strong>Getting all your PDFs from database...</strong>
+        </div>
+      )}
       {pdfs &&
         pdfs.map(pdf => {
           return (
