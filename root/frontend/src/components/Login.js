@@ -25,6 +25,7 @@ function Login() {
     try {
       setError("");
       await login(userData, history);
+      history.push("/");
     } catch {
       setError("Wrong credentials");
       setLoading(false);
