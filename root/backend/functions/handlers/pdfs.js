@@ -21,6 +21,36 @@ exports.getAllPdfs = (req, res) => {
     .catch(err => console.error(err));
 };
 
+exports.getOnePdf = (req, res) => {
+  const document = db.doc(`/pdfs/${req.params.pdfId}`);
+  document
+    .get()
+    .then(doc => {
+      if (!doc.exists) return res.status(404).json({ error: "PDF not found" });
+
+      if (doc.data().userName !== req.user.user) {
+        return res.status(403).json({ error: "Unauthorized" });
+      } else {
+        document.get().then(doc => {
+          let pdf = [
+            {
+              pdfId: doc.id,
+              name: doc.data().name,
+              text: doc.data().text,
+              userName: doc.data().userName,
+              createdAt: doc.data().createdAt,
+            },
+          ];
+          return res.json(pdf);
+        });
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      return res.status(500).json({ error: err.code });
+    });
+};
+
 exports.postPdf = (req, res) => {
   const BusBoy = require("busboy");
   const fs = require("fs");
@@ -65,7 +95,7 @@ exports.postPdf = (req, res) => {
     db.collection("pdfs")
       .add(newPdf)
       .then(doc => {
-        return res.json({ message: `document ${doc.id} created successfully` });
+        return res.json(doc.id);
       })
       .catch(err => {
         console.log(err);

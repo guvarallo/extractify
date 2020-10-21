@@ -49,15 +49,16 @@ export function AuthProvider({ children }) {
   }
 
   // Clears token on closing/refreshing browser
-  window.addEventListener(
-    "beforeunload",
-    function () {
-      localStorage.clear();
-    },
-    false
-  );
+  // window.addEventListener(
+  //   "beforeunload",
+  //   function () {
+  //     localStorage.clear();
+  //   },
+  //   false
+  // );
 
   useEffect(() => {
+    auth.onAuthStateChanged(user => setCurrentUser(user));
     setLoading(false);
   }, []);
 

@@ -2,7 +2,12 @@ const functions = require("firebase-functions");
 const app = require("express")();
 const cors = require("cors");
 
-const { getAllPdfs, postPdf, deletePdf } = require("./handlers/pdfs");
+const {
+  getAllPdfs,
+  getOnePdf,
+  postPdf,
+  deletePdf,
+} = require("./handlers/pdfs");
 const { signup, login, getUser } = require("./handlers/users");
 
 const FBAuth = require("./utils/fbAuth");
@@ -10,6 +15,7 @@ const FBAuth = require("./utils/fbAuth");
 app.use(cors());
 
 app.get("/pdfs", FBAuth, getAllPdfs);
+app.get("/pdf/:pdfId", FBAuth, getOnePdf);
 app.post("/pdf", FBAuth, postPdf);
 app.delete("/pdf/:pdfId", FBAuth, deletePdf);
 app.post("/signup", signup);

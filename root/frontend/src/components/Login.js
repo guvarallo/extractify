@@ -27,12 +27,12 @@ function Login() {
       await login(userData, history);
     } catch {
       setError("Wrong credentials");
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (
-    <>
+    <div style={{ maxWidth: "50%", margin: "auto" }}>
       <Card>
         <Card.Body>
           <h2 className='text-center mb-4'>Login</h2>
@@ -68,7 +68,7 @@ function Login() {
       <div className='w-100 text-center mt-2'>
         Do not have an account? <Link to='/signup'>Sign Up here!</Link>
       </div>
-    </>
+    </div>
   );
 }
 

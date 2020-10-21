@@ -35,12 +35,12 @@ function Signup() {
       await signup(newUserData, history);
     } catch (err) {
       setError(err.response.data);
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (
-    <>
+    <div style={{ maxWidth: "50%", margin: "auto" }}>
       <Card>
         <Card.Body>
           <h2 className='text-center mb-4'>Sign Up</h2>
@@ -98,7 +98,7 @@ function Signup() {
       <div className='w-100 text-center mt-2'>
         Already have an account? <Link to='/login'>Login here!</Link>
       </div>
-    </>
+    </div>
   );
 }
 
