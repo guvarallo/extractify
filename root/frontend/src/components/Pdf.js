@@ -4,7 +4,7 @@ import axios from "axios";
 
 function Pdf() {
   const [error, setError] = useState("");
-  const [pdfs, setPdfs] = useState(null);
+  const [pdfs, setPdfs] = useState();
   const [firstLoad, setFirstLoad] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -18,14 +18,16 @@ function Pdf() {
         const res = await axios.get(`${url}/pdfs`, {
           headers: { Authorization: localStorage.FBIdToken },
         });
-        setPdfs(
-          res.data.map(result => ({
-            id: result.pdfId,
-            name: result.name,
-            text: result.text,
-            user: result.userName,
-          }))
-        );
+        res.data.map(pdf => {
+          return setPdfs([
+            {
+              id: pdf.pdfId,
+              name: pdf.name,
+              text: pdf.text,
+              user: pdf.userName,
+            },
+          ]);
+        });
         setFirstLoad(false);
       } catch (err) {
         console.error(err);
