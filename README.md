@@ -12,12 +12,6 @@ Check it out live by **[clicking here](https://extractify-development.web.app/)*
 
 </div>
 
-<div align="center">
-
-<!-- ![Selfolio Demo](public/demo.gif) -->
-
-</div>
-
 ## Details
 
 I built this project with the following tools:
@@ -25,3 +19,11 @@ I built this project with the following tools:
 - In the backend, I used Firebase, Node/Express and the pdf-parse package.
 - In the frontend, I used React and React Bootstrap.
 - Finally I used Firebase Hosting to deploy.
+
+## Demo
+
+<div align="center">
+
+![Extractify Demo](root/extractify_demo.gif)
+
+</div>
