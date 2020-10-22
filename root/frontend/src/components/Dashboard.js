@@ -24,7 +24,7 @@ function Dashboard({ token }) {
 
   return (
     <>
-      <Card style={{ maxWidth: "50%", margin: "auto" }}>
+      <Card className='app' style={{ maxWidth: "50%", margin: "auto" }}>
         {error && (
           <Alert style={{ maxWidth: "90%", margin: "auto" }} variant='danger'>
             {error}

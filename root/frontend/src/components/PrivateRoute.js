@@ -21,8 +21,6 @@ function PrivateRoute({ component: Component, ...rest }) {
     authed = false;
   }
 
-  console.log(authed);
-
   return (
     <Route
       {...rest}

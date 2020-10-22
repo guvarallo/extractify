@@ -9,6 +9,8 @@ import Signup from "./Signup";
 import Login from "./Login";
 import ForgotPassword from "./ForgotPassword";
 
+import "../styles/global.css";
+
 function App() {
   return (
     <Container
@@ -20,7 +22,7 @@ function App() {
           <AuthProvider>
             <Switch>
               <PrivateRoute exact path='/' component={Dashboard} />
-              <div style={{ maxWidth: "50%", margin: "auto" }}>
+              <div className='app' style={{ maxWidth: "50%", margin: "auto" }}>
                 <div style={{ textAlign: "center", marginBottom: "50px" }}>
                   <h2 className='mb-4'>Welcome to Extractify</h2>
                   <p>An app that parses PDF to Text in seconds!</p>
