@@ -6,8 +6,9 @@ import jwt_decode from "jwt-decode";
 function PrivateRoute({ component: Component, ...rest }) {
   let authed;
   let token = localStorage.FBIdToken;
+  let decodedToken;
   if (token) {
-    const decodedToken = jwt_decode(token);
+    decodedToken = jwt_decode(token);
     // If token is expired, delete from localStorage and redirect to /login
     if (decodedToken.exp * 1000 < Date.now()) {
       authed = false;
@@ -26,7 +27,11 @@ function PrivateRoute({ component: Component, ...rest }) {
     <Route
       {...rest}
       render={props => {
-        return authed ? <Component {...props} /> : <Redirect to='login' />;
+        return authed ? (
+          <Component {...props} token={decodedToken} />
+        ) : (
+          <Redirect to='login' />
+        );
       }}
     ></Route>
   );

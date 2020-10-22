@@ -6,7 +6,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 import Pdf from "../components/Pdf";
 
-function Dashboard() {
+function Dashboard({ token }) {
   const [error, setError] = useState("");
   const { logout } = useAuth();
   const history = useHistory();
@@ -31,8 +31,9 @@ function Dashboard() {
           </Alert>
         )}
         <Card.Body className='text-center'>
-          <h2 className='mb-4'>Welcome!</h2>
-          <div className='w-100 mt-2'>
+          <h2 style={{ marginBottom: "20px" }}>Profile</h2>
+          <strong>Email: </strong> {token.email}
+          <div className='w-100'>
             <Button variant='link' onClick={handleLogout}>
               Logout
             </Button>

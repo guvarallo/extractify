@@ -20,9 +20,15 @@ function App() {
           <AuthProvider>
             <Switch>
               <PrivateRoute exact path='/' component={Dashboard} />
-              <Route path='/signup' component={Signup} />
-              <Route path='/login' component={Login} />
-              <Route path='/forgot-password' component={ForgotPassword} />
+              <div style={{ maxWidth: "50%", margin: "auto" }}>
+                <div style={{ textAlign: "center", marginBottom: "50px" }}>
+                  <h2 className='mb-4'>Welcome to Extractify</h2>
+                  <p>An app that parses PDF to Text in seconds!</p>
+                </div>
+                <Route path='/signup' component={Signup} />
+                <Route path='/login' component={Login} />
+                <Route path='/forgot-password' component={ForgotPassword} />
+              </div>
             </Switch>
           </AuthProvider>
         </Router>
